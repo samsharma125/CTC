@@ -10,11 +10,13 @@ export default function Page() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status !== "authenticated") return;
+    if (status !== "authenticated" || !session?.user) return;
 
-    if (session.user.role === "teacher") {
+    const role = session.user?.role;
+
+    if (role === "teacher") {
       router.replace("/dashboard/teacher");
-    } else {
+    } else if (role === "student") {
       router.replace("/dashboard/student");
     }
   }, [session, status, router]);
