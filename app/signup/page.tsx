@@ -1,8 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+
+// 🔥 Separate component for search params (REQUIRED)
+function ErrorMessage({ error }: { error: string }) {
+  const params = useSearchParams();
+  const urlError = params.get("error");
+
+  if (!error && !urlError) return null;
+
+  return (
+    <p className="text-red-400 text-sm mb-4 text-center">
+      {error ||
+        (urlError === "ROLE_MISMATCH"
+          ? "❌ This email is registered with a different role"
+          : urlError === "wrong-code"
+          ? "❌ Invalid teacher secret code"
+          : urlError === "unauthorized"
+          ? "❌ Access denied"
+          : "❌ Something went wrong")}
+    </p>
+  );
+}
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -13,47 +34,40 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const params = useSearchParams();
-  const urlError = params.get("error");
+  const handleGoogleLogin = async () => {
+    setError("");
 
- const handleGoogleLogin = async () => {
-  setError("");
-
-  if (form.role === "teacher" && form.secretCode !== "teach123") {
-    setError("❌ Invalid teacher secret code");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    // ✅ STEP 1: Call your API to set role cookie
-    const res = await fetch(
-      `/api/auth/role?role=${encodeURIComponent(form.role)}&code=${encodeURIComponent(form.secretCode)}`
-    );
-
-    const data = await res.json();
-
-    if (!res.ok) {
+    if (form.role === "teacher" && form.secretCode !== "teach123") {
       setError("❌ Invalid teacher secret code");
-      setLoading(false);
       return;
     }
 
-    // ✅ STEP 2: Use NextAuth signIn (VERY IMPORTANT)
-    await signIn("google", {
-      callbackUrl: "/", // you can change later
-    });
+    try {
+      setLoading(true);
 
-  } catch (err) {
-    setError("❌ Something went wrong");
-    setLoading(false);
-  }
-};
+      const res = await fetch(
+        `/api/auth/role?role=${encodeURIComponent(
+          form.role
+        )}&code=${encodeURIComponent(form.secretCode)}`
+      );
+
+      if (!res.ok) {
+        setError("❌ Invalid teacher secret code");
+        setLoading(false);
+        return;
+      }
+
+      await signIn("google", {
+        callbackUrl: "/",
+      });
+    } catch (err) {
+      setError("❌ Something went wrong");
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6 bg-gradient-to-br from-[#050014] via-[#0c0128] to-[#14033a] text-white">
-
       <div className="grid md:grid-cols-2 gap-16 max-w-6xl w-full">
 
         {/* LEFT SIDE */}
@@ -122,19 +136,10 @@ export default function SignupPage() {
             />
           )}
 
-          {/* 🔥 ERROR DISPLAY */}
-          {(error || urlError) && (
-            <p className="text-red-400 text-sm mb-4 text-center">
-              {error ||
-                (urlError === "ROLE_MISMATCH"
-                  ? "❌ This email is registered with a different role"
-                  : urlError === "wrong-code"
-                  ? "❌ Invalid teacher secret code"
-                  : urlError === "unauthorized"
-                  ? "❌ Access denied"
-                  : "❌ Something went wrong")}
-            </p>
-          )}
+          {/* 🔥 ERROR DISPLAY (Suspense Wrapped) */}
+          <Suspense fallback={null}>
+            <ErrorMessage error={error} />
+          </Suspense>
 
           {/* GOOGLE BUTTON */}
           <button
