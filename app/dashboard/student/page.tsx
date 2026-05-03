@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -13,6 +14,22 @@ import {
 } from "recharts";
 
 export default function StudentDashboard() {
+
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      try {
+        const res = await fetch("/api/feedback");
+        const data = await res.json();
+        setFeedbacks(data || []);
+      } catch (err) {
+        console.log("Feedback error:", err);
+      }
+    };
+
+    fetchFeedback();
+  }, []);
 
   // 📈 Weekly Points
   const weeklyData = [
@@ -34,9 +51,6 @@ export default function StudentDashboard() {
   // 🌊 Growth Trend
   const growthData = weeklyData;
 
-
-
-  
   return (
     <div className="bg-[#050014] min-h-screen text-white">
 
@@ -55,24 +69,24 @@ export default function StudentDashboard() {
 
           <div className="bg-white/5 p-6 rounded-xl border border-white/10">
             <h2 className="text-gray-400 text-sm">Courses Enrolled</h2>
-            <p className="text-2xl font-bold mt-2">5</p>
+            <p className="text-2xl font-bold mt-2">4</p>
           </div>
 
           <div className="bg-white/5 p-6 rounded-xl border border-white/10">
             <h2 className="text-gray-400 text-sm">Assignments Pending</h2>
-            <p className="text-2xl font-bold mt-2">3</p>
+            <p className="text-2xl font-bold mt-2">0</p>
           </div>
 
           <div className="bg-white/5 p-6 rounded-xl border border-white/10">
             <h2 className="text-gray-400 text-sm">Leaderboard Rank</h2>
-            <p className="text-2xl font-bold mt-2">#12</p>
+            <p className="text-2xl font-bold mt-2">#1</p>
           </div>
 
         </div>
 
         {/* ⚡ QUICK ACTIONS */}
         <div>
-          <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-semibold mb-4">Features</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
@@ -168,31 +182,80 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        {/* 📜 RECENT ACTIVITY */}
-        {/* <div>
-          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+        {/* 💬 FEEDBACK SECTION */}
+     {/* 💬 FEEDBACK SECTION */}
+<div>
+  <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+    💬 Student Feedback
+  </h2>
 
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4">
+  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4 backdrop-blur-xl">
 
-            <p className="text-gray-300">
-              ✅ Assignment "React Basics" submitted
-            </p>
+    {feedbacks.length === 0 ? (
+      <p className="text-gray-400 text-sm text-center py-6">
+        No feedback yet 🚫
+      </p>
+    ) : (
+      feedbacks.map((f, i) => (
+        <div
+          key={i}
+          className="p-5 rounded-xl border border-white/10 bg-gradient-to-r from-white/5 to-white/0 hover:from-purple-500/10 hover:to-pink-500/10 transition duration-300 shadow-md hover:shadow-purple-500/20"
+        >
 
-            <p className="text-gray-300">
-              📚 New course "Cyber Security Intro" added
-            </p>
+          {/* HEADER */}
+          <div className="flex justify-between items-center">
 
-            <p className="text-gray-300">
-              🏆 You moved up to rank #12
-            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center font-bold">
+                {f.studentName?.charAt(0)}
+              </div>
 
+              <div>
+                <h3 className="font-semibold text-white">
+                  {f.studentName}
+                </h3>
+
+                {f.subject && (
+                  <p className="text-xs text-purple-400">
+                    {f.subject}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* ⭐ RATING */}
+            {f.rating && (
+              <div className="text-yellow-400 text-sm font-medium">
+                ⭐ {f.rating}/5
+              </div>
+            )}
           </div>
-        </div> */}
+
+          {/* MESSAGE */}
+          <p className="text-gray-300 mt-3 text-sm leading-relaxed">
+            {f.message}
+          </p>
+
+          {/* FOOTER */}
+          <div className="flex justify-between items-center mt-4">
+
+            <p className="text-xs text-gray-500">
+              {new Date(f.createdAt).toLocaleString()}
+            </p>
+
+            <span className="text-xs px-2 py-1 rounded bg-white/10 text-gray-300">
+              Feedback
+            </span>
+          </div>
+
+        </div>
+      ))
+    )}
+
+  </div>
+</div>
 
       </div>
-      
-
     </div>
-    
   );
 }

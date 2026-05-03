@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation"; // ✅ ADD router
 
 export default function StudentProfile() {
   const { id } = useParams();
+  const router = useRouter(); // ✅ ADD
+
   const [student, setStudent] = useState<any>(null);
 
   useEffect(() => {
@@ -44,6 +46,21 @@ export default function StudentProfile() {
             Total Submissions: {student.submissions}
           </p>
         </div>
+
+        {/* 🔥 ADD THIS BUTTON */}
+        <div className="mt-6">
+          <button
+            onClick={() =>
+              router.push(
+                `/dashboard/teacher/students/${id}/analytics`
+              )
+            }
+            className="px-5 py-2 bg-purple-500 hover:bg-purple-600 transition rounded-lg text-white font-semibold"
+          >
+            📊 View Full Analytics
+          </button>
+        </div>
+
       </div>
     </div>
   );

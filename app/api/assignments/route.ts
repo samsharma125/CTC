@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Assignment from "@/models/Assignment";
-import Notification from "@/models/Notification"; // ✅ ADD
-import User from "@/models/User"; // already present
+import Notification from "@/models/Notification";
+import User from "@/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
-
 
 // ======================
 // ✅ CREATE (TEACHER)
@@ -15,7 +14,6 @@ export async function POST(req: Request) {
 
   const session = await getServerSession(authOptions);
 
-  // ❌ Only teacher allowed
   if (!session || session.user.role !== "teacher") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
@@ -28,10 +26,7 @@ export async function POST(req: Request) {
     teacherEmail: session.user.email,
   });
 
-  // ======================
-  // 🔔 NOTIFICATION LOGIC (MCQ)
-  // ======================
-
+  // 🔔 Notifications
   const students = await User.find({ role: "student" });
 
   if (students.length > 0) {
@@ -46,14 +41,11 @@ export async function POST(req: Request) {
     await Notification.insertMany(notifications);
   }
 
-  // ======================
-
   return NextResponse.json(assignment);
 }
 
-
 // ======================
-// ✅ GET (STUDENT)
+// ✅ GET ALL (STUDENT)
 // ======================
 export async function GET() {
   await connectDB();

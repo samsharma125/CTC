@@ -5,13 +5,33 @@ const ProgressSchema = new mongoose.Schema(
     userId: { type: String, required: true, index: true },
     playlistId: { type: String, required: true, index: true },
 
-    completedVideos: { type: [String], default: [] },
+    // ✅ Track each lecture with date
+    completedVideos: [
+      {
+        videoId: String,
+        completedAt: Date,
+      },
+    ],
+
     lastVideoId: { type: String, default: "" },
+
+    // ✅ NEW: Assignments tracking
+    assignments: [
+      {
+        title: String,
+        assignedAt: Date,
+        submittedAt: Date,
+        status: {
+          type: String,
+          enum: ["pending", "submitted"],
+          default: "pending",
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
 
-// ✅ Prevent duplicate progress per user + playlist
 ProgressSchema.index(
   { userId: 1, playlistId: 1 },
   { unique: true }

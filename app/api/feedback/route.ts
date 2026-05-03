@@ -44,18 +44,28 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(feedback);
 }
 
-// ✅ GET → teacher sees feedback
+// ✅ GET → teacher + student both supported
 export async function GET(req: NextRequest) {
   await connectDB();
 
   const user: any = getUser(req);
-  if (!user || user.role !== "teacher") {
+
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const feedbacks = await Feedback.find()
-    .sort({ createdAt: -1 })
-    .limit(50);
+  let feedbacks;
+
+  if (user.role === "teacher") {
+    // 🔥 teacher → all feedback
+    feedbacks = await Feedback.find()
+      .sort({ createdAt: -1 })
+      .limit(50);
+  } else {
+    // 🔥 student → only their feedback
+    feedbacks = await Feedback.find({ studentId: user.id })
+      .sort({ createdAt: -1 });
+  }
 
   return NextResponse.json(feedbacks);
 }

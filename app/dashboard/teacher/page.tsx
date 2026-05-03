@@ -25,12 +25,12 @@ export default function TeacherDashboard() {
 
           <div className="bg-white/5 p-6 rounded-xl border border-white/10">
             <h2 className="text-gray-400 text-sm">Total Students</h2>
-            <p className="text-2xl font-bold mt-2">120</p>
+            <p className="text-2xl font-bold mt-2">1</p>
           </div>
 
           <div className="bg-white/5 p-6 rounded-xl border border-white/10">
             <h2 className="text-gray-400 text-sm">Assignments Given</h2>
-            <p className="text-2xl font-bold mt-2">15</p>
+            <p className="text-2xl font-bold mt-2">1</p>
           </div>
 
         </div>

@@ -107,9 +107,9 @@ export default function StudentsPage() {
                 </span>
 
                 {/* 🔥 SUBMISSION COUNT */}
-                <span className="text-sm text-purple-300">
+                {/* <span className="text-sm text-purple-300">
                   📄 {student.submissions || 0}
-                </span>
+                </span> */}
               </div>
             </div>
           ))}
