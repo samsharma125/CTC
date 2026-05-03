@@ -65,7 +65,7 @@ export default function Navbar() {
 
   return (
     <>
-     <div className="fixed top-0 left-0 w-full h-24 
+    <div className="fixed top-0 left-0 w-full h-16 
 backdrop-blur-xl bg-black/50 border-b border-white/10
 flex items-center justify-between px-6 md:px-10 z-50 shadow-lg">
         {/* LEFT */}
