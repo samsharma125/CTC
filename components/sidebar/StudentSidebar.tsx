@@ -76,10 +76,30 @@ export default function StudentSidebar({
    
              </Link>
    
-                  <Link href="/dashboard/student/feedback">
-  💬 Feedback
-</Link>
-
+                
+ 
+         <a
+  href="https://drive.google.com/drive/u/0/folders/1V5-NWPj1JhfBBf6wpU4rV7Ebar2ShSi5"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={handleClick}
+  className="block px-4 py-2 rounded transition font-medium text-purple-300 hover:bg-purple-500/10"
+>
+  📂 Study Material  <br /> (Company Placement)
+</a>
+ <Link
+            href="/dashboard/student/feedback"
+            onClick={handleClick}
+            className={`block px-4 py-2 rounded transition font-medium
+            ${
+              pathname === "/dashboard/student/feedback"
+                ? "bg-purple-500/20 text-purple-400"
+                : "text-purple-300 hover:bg-purple-500/10"
+            }`}
+          >
+            💬 Feedback
+   
+             </Link>
         </div>
 
         {/* FOOTER */}
